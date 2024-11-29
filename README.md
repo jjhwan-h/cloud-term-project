@@ -1,6 +1,6 @@
 # ☁️Cloud-term-project
 
-2024년 충북대학교 클라우드컴퓨팅 Term-Project입니다.
+2024년 충북대학교 클라우드컴퓨팅 Term-Project입니다.<br>
 주제: **AWS동적관리 프로그램**
 
 ---
