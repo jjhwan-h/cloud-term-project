@@ -17,7 +17,7 @@ const (
 )
 
 var menu = map[string]string{
-	"listInstance":     "1. listinstance",
+	"listInstance":     "1. list instance",
 	"availableZones":   "2. available zones",
 	"startInstance":    "3. start instance",
 	"availableRegions": "4. available regions",
@@ -30,7 +30,7 @@ var menu = map[string]string{
 }
 
 func printMenu() {
-	str := fmt.Sprintf("%s\n%s\t\t\t%s\n%s\t\t%s\n%s\t\t%s\n%s\t\t%s\n%s\n%s",
+	str := fmt.Sprintf("%s\n%s\t\t%s\n%s\t\t%s\n%s\t\t%s\n%s\t\t%s\n%s\n%s",
 		menu["line"],
 		menu["listInstance"],
 		menu["availableZones"],
