@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	a "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
 
 func (aws Aws) ListInstances() error {
@@ -45,6 +47,18 @@ func (aws Aws) StopInstance() {
 	fmt.Println("stop instance")
 }
 func (aws Aws) CreateInstance(id string) error {
+	res, err := aws.ec2.RunInstances(context.TODO(), &ec2.RunInstancesInput{
+		MaxCount:     a.Int32(1),
+		MinCount:     a.Int32(1),
+		ImageId:      a.String(id),
+		InstanceType: types.InstanceTypeT2Micro,
+	})
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Successfully started EC2 instance %s based on AMI %s\n",
+		*res.ReservationId, id)
 	return nil
 }
 func (aws Aws) RebootInstance() {

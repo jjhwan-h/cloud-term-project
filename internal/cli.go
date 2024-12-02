@@ -51,6 +51,7 @@ func (cli Cli) processAnswer(aws *aws.Aws) {
 	case stopInstance:
 		aws.StopInstance()
 	case createInstance:
+		fmt.Println("Enter ami id: ")
 		id := cli.scanString()
 		err := aws.CreateInstance(id)
 		if err != nil {
