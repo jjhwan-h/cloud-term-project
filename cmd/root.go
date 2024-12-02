@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -11,14 +11,14 @@ import (
 var cfgFile string
 
 var RootCmd = &cobra.Command{
-	Use:   "aws",
+	Use:   `aws-app`,
 	Short: "AWS 동적 관리 프로그램입니다.",
 	Long:  "AWS 동적 관리 프로그램입니다.\n서버 및 리소스를 실시간으로 모니터링하고, 필요에 따라 자동 확장 및 축소 기능을 제공합니다.",
 }
 
 func Execute() {
 	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 }
@@ -39,8 +39,8 @@ func initConfig() {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Println("Using config file:", viper.ConfigFileUsed())
 	} else {
-		fmt.Printf("Error reading config file: %v\n", err)
+		log.Printf("Error reading config file: %v\n", err)
 	}
 }

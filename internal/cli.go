@@ -38,7 +38,7 @@ func (cli Cli) processAnswer(aws *aws.Aws) {
 
 	switch choice {
 	case listInstance:
-		err := aws.ListInstance()
+		err := aws.ListInstances()
 		if err != nil {
 			log.Println(err)
 		}
@@ -51,7 +51,11 @@ func (cli Cli) processAnswer(aws *aws.Aws) {
 	case stopInstance:
 		aws.StopInstance()
 	case createInstance:
-		aws.CreateInstance()
+		id := cli.scanString()
+		err := aws.CreateInstance(id)
+		if err != nil {
+			log.Println(err)
+		}
 	case rebootInstance:
 		aws.RebootInstance()
 	case listImages:
@@ -83,4 +87,9 @@ func (cli Cli) scanInt() option {
 	cli.sc.Scan()
 	v, _ := strconv.Atoi(cli.sc.Text())
 	return option(v)
+}
+
+func (cli Cli) scanString() string {
+	cli.sc.Scan()
+	return cli.sc.Text()
 }
