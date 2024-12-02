@@ -4,6 +4,7 @@ import (
 	"TermProject/aws"
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 )
@@ -37,7 +38,10 @@ func (cli Cli) processAnswer(aws *aws.Aws) {
 
 	switch choice {
 	case listInstance:
-		aws.ListInstance()
+		err := aws.ListInstance()
+		if err != nil {
+			log.Println(err)
+		}
 	case availableZones:
 		aws.AvailableZones()
 	case startInstance:
