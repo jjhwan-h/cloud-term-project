@@ -43,17 +43,19 @@ func (aws Aws) ListInstances() error {
 
 	return nil
 }
-func (aws Aws) StopInstance(id string, dryRun bool) error {
-	_, err := aws.ec2.StopInstances(context.TODO(), &ec2.StopInstancesInput{
-		DryRun:      ToBool(dryRun),
-		InstanceIds: []string{id},
-	})
+func (aws Aws) StopInstance(id string) error {
+	//DryRun : 요청 유효성 및 잠재적인 오류 확인
+	err := aws.stopInstance(id, true)
 	if err != nil {
-		if dryRun && strings.Contains(err.Error(), "DryRunOperation") {
-			return nil
-		}
 		return err
 	}
+	//Run
+	err = aws.stopInstance(id, false)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Successfully stop instance %s\n", id)
+
 	return nil
 }
 func (aws Aws) CreateInstance(id string) error {
@@ -72,11 +74,40 @@ func (aws Aws) CreateInstance(id string) error {
 		*res.ReservationId, id)
 	return nil
 }
-func (aws Aws) RebootInstance() {
-	fmt.Println("reboot instance")
+func (aws Aws) RebootInstance(id string, dryRun bool) error {
+
+	return nil
 }
-func (aws Aws) StartInstance(id string, dryRun bool) error {
+func (aws Aws) StartInstance(id string) error {
+	//DryRun : 요청 유효성 및 잠재적인 오류 확인
+	err := aws.startInstance(id, true)
+	if err != nil {
+		return err
+	}
+	//Run
+	err = aws.startInstance(id, false)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Successfully start instance %s\n", id)
+
+	return nil
+}
+func (aws Aws) startInstance(id string, dryRun bool) error {
 	_, err := aws.ec2.StartInstances(context.TODO(), &ec2.StartInstancesInput{
+		DryRun:      ToBool(dryRun),
+		InstanceIds: []string{id},
+	})
+	if err != nil {
+		if dryRun && strings.Contains(err.Error(), "DryRunOperation") {
+			return nil
+		}
+		return err
+	}
+	return nil
+}
+func (aws Aws) stopInstance(id string, dryRun bool) error {
+	_, err := aws.ec2.StopInstances(context.TODO(), &ec2.StopInstancesInput{
 		DryRun:      ToBool(dryRun),
 		InstanceIds: []string{id},
 	})

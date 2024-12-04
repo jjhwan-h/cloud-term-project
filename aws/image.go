@@ -4,9 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	a "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/spf13/viper"
 )
 
@@ -14,10 +12,10 @@ func (aws Aws) ListImages() error {
 	fmt.Println("list images")
 	input := &ec2.DescribeImagesInput{
 		Owners: []string{viper.GetString("AWS_OWNER_ID")},
-		Filters: []types.Filter{
-			{Name: a.String("name"),
-				Values: []string{"htcondor-worker"}},
-		},
+		// Filters: []types.Filter{
+		// 	{Name: a.String("name"),
+		// 		Values: []string{"htcondor-worker"}},
+		// },
 	}
 
 	images, err := aws.ec2.DescribeImages(context.TODO(), input)

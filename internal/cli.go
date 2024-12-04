@@ -47,38 +47,18 @@ func (cli Cli) processAnswer(aws *aws.Aws) {
 	case startInstance:
 		fmt.Println("Enter instance id: ")
 		id := cli.scanString()
-		//DryRun : 요청 유효성 및 잠재적인 오류 확인
-		err := aws.StartInstance(id, true)
+		err := aws.StartInstance(id)
 		if err != nil {
 			log.Println(err)
-		}
-		//Run
-		if err == nil {
-			err = aws.StartInstance(id, false)
-			if err != nil {
-				log.Println(err)
-			} else {
-				fmt.Printf("Successfully start instance %s\n", id)
-			}
 		}
 	case availableRegions:
 		aws.AvailableRegions()
 	case stopInstance:
 		fmt.Println("Enter instance id: ")
 		id := cli.scanString()
-		//DryRun : 요청 유효성 및 잠재적인 오류 확인
-		err := aws.StopInstance(id, true)
+		err := aws.StopInstance(id)
 		if err != nil {
 			log.Println(err)
-		}
-		//Run
-		if err == nil {
-			err = aws.StopInstance(id, false)
-			if err != nil {
-				log.Println(err)
-			} else {
-				fmt.Printf("Successfully stop instance %s\n", id)
-			}
 		}
 	case createInstance:
 		fmt.Println("Enter ami id: ")
@@ -88,7 +68,22 @@ func (cli Cli) processAnswer(aws *aws.Aws) {
 			log.Println(err)
 		}
 	case rebootInstance:
-		aws.RebootInstance()
+		fmt.Println("Enter instance id: ")
+		id := cli.scanString()
+		//DryRun : 요청 유효성 및 잠재적인 오류 확인
+		err := aws.RebootInstance(id, true)
+		if err != nil {
+			log.Println(err)
+		}
+		//Run
+		if err == nil {
+			err = aws.RebootInstance(id, false)
+			if err != nil {
+				log.Println(err)
+			} else {
+				fmt.Printf("Successfully reboot instance %s\n", id)
+			}
+		}
 	case listImages:
 		aws.ListImages()
 	case quit:
