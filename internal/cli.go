@@ -45,7 +45,22 @@ func (cli Cli) processAnswer(aws *aws.Aws) {
 	case availableZones:
 		aws.AvailableZones()
 	case startInstance:
-		aws.StartInstance()
+		fmt.Println("Enter instance id: ")
+		id := cli.scanString()
+		//DryRun : 요청 유효성 및 잠재적인 오류 확인
+		err := aws.StartInstance(id, true)
+		if err != nil {
+			log.Println(err)
+		}
+		//Run
+		if err == nil {
+			err = aws.StartInstance(id, false)
+			if err != nil {
+				log.Println(err)
+			} else {
+				fmt.Printf("Successfully start instance %s\n", id)
+			}
+		}
 	case availableRegions:
 		aws.AvailableRegions()
 	case stopInstance:
