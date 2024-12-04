@@ -75,7 +75,16 @@ func (aws Aws) CreateInstance(id string) error {
 func (aws Aws) RebootInstance() {
 	fmt.Println("reboot instance")
 }
-func (aws Aws) StartInstance() {
-
-	fmt.Println("start instance")
+func (aws Aws) StartInstance(id string, dryRun bool) error {
+	_, err := aws.ec2.StartInstances(context.TODO(), &ec2.StartInstancesInput{
+		DryRun:      ToBool(dryRun),
+		InstanceIds: []string{id},
+	})
+	if err != nil {
+		if dryRun && strings.Contains(err.Error(), "DryRunOperation") {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
