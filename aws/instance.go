@@ -3,8 +3,8 @@ package aws
 import (
 	"context"
 	"fmt"
+	"strings"
 
-	a "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
@@ -43,14 +43,25 @@ func (aws Aws) ListInstances() error {
 
 	return nil
 }
-func (aws Aws) StopInstance() {
-	fmt.Println("stop instance")
+func (aws Aws) StopInstance(id string, dryRun bool) error {
+	_, err := aws.ec2.StopInstances(context.TODO(), &ec2.StopInstancesInput{
+		DryRun:      ToBool(dryRun),
+		InstanceIds: []string{id},
+	})
+	if err != nil {
+		if dryRun && strings.Contains(err.Error(), "DryRunOperation") {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
 func (aws Aws) CreateInstance(id string) error {
+	fmt.Println("Creating...")
 	res, err := aws.ec2.RunInstances(context.TODO(), &ec2.RunInstancesInput{
-		MaxCount:     a.Int32(1),
-		MinCount:     a.Int32(1),
-		ImageId:      a.String(id),
+		MaxCount:     ToInt32(1),
+		MinCount:     ToInt32(1),
+		ImageId:      ToString(id),
 		InstanceType: types.InstanceTypeT2Micro,
 	})
 	if err != nil {
@@ -65,5 +76,6 @@ func (aws Aws) RebootInstance() {
 	fmt.Println("reboot instance")
 }
 func (aws Aws) StartInstance() {
+
 	fmt.Println("start instance")
 }
