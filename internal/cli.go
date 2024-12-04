@@ -4,9 +4,7 @@ import (
 	"TermProject/aws"
 	"bufio"
 	"fmt"
-	"log"
 	"os"
-	"strconv"
 )
 
 type Cli struct {
@@ -39,41 +37,31 @@ func (cli Cli) processAnswer(aws *aws.Aws) {
 	switch choice {
 	case listInstance:
 		err := aws.ListInstances()
-		if err != nil {
-			log.Println(err)
-		}
+		handleError(err)
 	case availableZones:
 		aws.AvailableZones()
 	case startInstance:
 		fmt.Println("Enter instance id: ")
 		id := cli.scanString()
 		err := aws.StartInstance(id)
-		if err != nil {
-			log.Println(err)
-		}
+		handleError(err)
 	case availableRegions:
 		aws.AvailableRegions()
 	case stopInstance:
 		fmt.Println("Enter instance id: ")
 		id := cli.scanString()
 		err := aws.StopInstance(id)
-		if err != nil {
-			log.Println(err)
-		}
+		handleError(err)
 	case createInstance:
 		fmt.Println("Enter ami id: ")
 		id := cli.scanString()
 		err := aws.CreateInstance(id)
-		if err != nil {
-			log.Println(err)
-		}
+		handleError(err)
 	case rebootInstance:
 		fmt.Println("Enter instance id: ")
 		id := cli.scanString()
 		err := aws.RebootInstance(id)
-		if err != nil {
-			log.Println(err)
-		}
+		handleError(err)
 	case listImages:
 		aws.ListImages()
 	case quit:
@@ -93,19 +81,7 @@ func (cli Cli) checkStatus() {
 		}
 	}
 }
-
 func (cli Cli) getPromptChoice() option {
 	printMenu()
 	return cli.scanInt()
-}
-
-func (cli Cli) scanInt() option {
-	cli.sc.Scan()
-	v, _ := strconv.Atoi(cli.sc.Text())
-	return option(v)
-}
-
-func (cli Cli) scanString() string {
-	cli.sc.Scan()
-	return cli.sc.Text()
 }
