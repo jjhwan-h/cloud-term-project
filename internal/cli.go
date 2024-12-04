@@ -70,19 +70,9 @@ func (cli Cli) processAnswer(aws *aws.Aws) {
 	case rebootInstance:
 		fmt.Println("Enter instance id: ")
 		id := cli.scanString()
-		//DryRun : 요청 유효성 및 잠재적인 오류 확인
-		err := aws.RebootInstance(id, true)
+		err := aws.RebootInstance(id)
 		if err != nil {
 			log.Println(err)
-		}
-		//Run
-		if err == nil {
-			err = aws.RebootInstance(id, false)
-			if err != nil {
-				log.Println(err)
-			} else {
-				fmt.Printf("Successfully reboot instance %s\n", id)
-			}
 		}
 	case listImages:
 		aws.ListImages()

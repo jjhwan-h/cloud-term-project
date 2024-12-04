@@ -9,6 +9,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
 
+const (
+	DRYOPERATION = "DryRunOperation"
+)
+
 func (aws Aws) ListInstances() error {
 	fmt.Println("Listing instances...")
 
@@ -74,8 +78,18 @@ func (aws Aws) CreateInstance(id string) error {
 		*res.ReservationId, id)
 	return nil
 }
-func (aws Aws) RebootInstance(id string, dryRun bool) error {
-
+func (aws Aws) RebootInstance(id string) error {
+	// DryRun : 요청 유효성 및 잠재적인 오류 확인
+	err := aws.rebootInstance(id, true)
+	if err != nil {
+		return err
+	}
+	// Run
+	err = aws.rebootInstance(id, false)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Successfully reboot instance %s\n", id)
 	return nil
 }
 func (aws Aws) StartInstance(id string) error {
@@ -99,7 +113,7 @@ func (aws Aws) startInstance(id string, dryRun bool) error {
 		InstanceIds: []string{id},
 	})
 	if err != nil {
-		if dryRun && strings.Contains(err.Error(), "DryRunOperation") {
+		if dryRun && strings.Contains(err.Error(), DRYOPERATION) {
 			return nil
 		}
 		return err
@@ -112,7 +126,20 @@ func (aws Aws) stopInstance(id string, dryRun bool) error {
 		InstanceIds: []string{id},
 	})
 	if err != nil {
-		if dryRun && strings.Contains(err.Error(), "DryRunOperation") {
+		if dryRun && strings.Contains(err.Error(), DRYOPERATION) {
+			return nil
+		}
+		return err
+	}
+	return nil
+}
+func (aws Aws) rebootInstance(id string, dryRun bool) error {
+	_, err := aws.ec2.RebootInstances(context.TODO(), &ec2.RebootInstancesInput{
+		DryRun:      ToBool(dryRun),
+		InstanceIds: []string{id},
+	})
+	if err != nil {
+		if dryRun && strings.Contains(err.Error(), DRYOPERATION) {
 			return nil
 		}
 		return err
