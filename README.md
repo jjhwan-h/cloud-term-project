@@ -49,3 +49,4 @@ export TERM=xterm-256color
 ---
 
 ## 🎥 실행 영상
+![실행3](https://github.com/user-attachments/assets/48c09e3f-691e-415b-b97c-efbbf5014b3a)
