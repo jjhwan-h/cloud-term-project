@@ -2,86 +2,97 @@ package internal
 
 import (
 	"TermProject/aws"
-	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/charmbracelet/bubbles/table"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Cli struct {
-	on bool //작업 완료 여부
-	sc bufio.Scanner
+	aws   aws.Aws
+	table table.Model
+	ch    *string
+	menu  option
 }
 
 func NewCli() (*Cli, error) {
+	aws, err := aws.NewAws()
+	if err != nil {
+		return nil, err
+	}
+	t := NewTable(menuColumns, menuRows)
+
 	return &Cli{
-		on: false,
-		sc: *bufio.NewScanner(os.Stdin),
+		aws:   *aws,
+		table: t,
+		ch:    nil,
+		menu:  option(main),
 	}, nil
 }
 
 func (cli Cli) Start() error {
-	cli.sc.Split(bufio.ScanWords)
-
-	aws, err := aws.NewAws()
-	if err != nil {
-		return err
+	if _, err := tea.NewProgram(&cli).Run(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
 	}
-	cli.processAnswer(aws)
 	return nil
 }
 
-func (cli Cli) processAnswer(aws *aws.Aws) {
-	cli.checkStatus()
-	choice := cli.getPromptChoice()
-
+func (cli *Cli) processAnswer(choice option) {
 	switch choice {
 	case listInstance:
-		err := aws.ListInstances()
-		handleError(err)
+		rows, err := cli.aws.ListInstances(nil)
+		cli.ch = handleResult(nil, err)
+		cli.table = NewTable(instanceColumns, rows)
+		cli.menu = listInstance
 	case availableZones:
-		aws.AvailableZones()
+		rows, err := cli.aws.AvailableZones()
+		cli.ch = handleResult(nil, err)
+		cli.table = NewTable(zoneColumns, rows)
+		cli.menu = availableZones
 	case startInstance:
-		fmt.Println("Enter instance id: ")
-		id := cli.scanString()
-		err := aws.StartInstance(id)
-		handleError(err)
+		res, err := cli.aws.StartInstance(*cli.ch)
+		cli.ch = handleResult(res, err)
 	case availableRegions:
-		aws.AvailableRegions()
+		rows, err := cli.aws.AvailableRegions()
+		cli.ch = handleResult(nil, err)
+		cli.table = NewTable(regionColumns, rows)
+		cli.menu = availableRegions
 	case stopInstance:
-		fmt.Println("Enter instance id: ")
-		id := cli.scanString()
-		err := aws.StopInstance(id)
-		handleError(err)
+		res, err := cli.aws.StopInstance(*cli.ch)
+		cli.ch = handleResult(res, err)
 	case createInstance:
-		fmt.Println("Enter ami id: ")
-		id := cli.scanString()
-		err := aws.CreateInstance(id)
-		handleError(err)
+		res, err := cli.aws.CreateInstance(*cli.ch)
+		cli.ch = handleResult(res, err)
 	case rebootInstance:
-		fmt.Println("Enter instance id: ")
-		id := cli.scanString()
-		err := aws.RebootInstance(id)
-		handleError(err)
+		res, err := cli.aws.RebootInstance(*cli.ch)
+		cli.ch = handleResult(res, err)
 	case listImages:
-		aws.ListImages()
+		rows, err := cli.aws.ListImages()
+		cli.ch = handleResult(nil, err)
+		cli.table = NewTable(imageColumns, rows)
+		cli.menu = listImages
 	case quit:
-		fmt.Println("quit")
-		return
-	default:
-		fmt.Println("wrong number")
-	}
-
-	cli.processAnswer(aws)
-}
-
-func (cli Cli) checkStatus() {
-	for {
-		if !cli.on {
-			return
-		}
+		os.Exit(0)
 	}
 }
-func (cli Cli) getPromptChoice() option {
-	printMenu()
-	return cli.scanInt()
+
+func (cli *Cli) updateRunningInstance(selected option) {
+	rows, err := cli.aws.ListInstances(ptr("running"))
+	handleResult(nil, err)
+	cli.table = NewTable(instanceColumns, rows)
+	cli.menu = selected
+}
+func (cli *Cli) updateStoppedInstance(selected option) {
+	rows, err := cli.aws.ListInstances(ptr("stopped"))
+	handleResult(nil, err)
+	cli.table = NewTable(instanceColumns, rows)
+	cli.menu = selected
+}
+func (cli *Cli) updateListImage(selected option) {
+	rows, err := cli.aws.ListImages()
+	handleResult(nil, err)
+	cli.table = NewTable(imageColumns, rows)
+	cli.menu = selected
 }

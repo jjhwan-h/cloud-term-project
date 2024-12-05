@@ -2,43 +2,36 @@ package aws
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/charmbracelet/bubbles/table"
 )
 
-func (aws Aws) AvailableZones() error {
-	fmt.Println("Available zones...")
+func (aws Aws) AvailableZones() ([]table.Row, error) {
 	zones, err := aws.ec2.DescribeAvailabilityZones(context.TODO(), &ec2.DescribeAvailabilityZonesInput{})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	var rows []table.Row
 	for _, zone := range zones.AvailabilityZones {
-		fmt.Printf(
-			"[id] %s,  "+
-				"[region] %15s,  "+
-				"[zone] %15s\n", *zone.ZoneId, *zone.RegionName, *zone.ZoneName)
+		rows = append(rows, table.Row{*zone.ZoneId, *zone.RegionName, *zone.ZoneName})
 	}
 
-	return nil
+	return rows, nil
 }
-func (aws Aws) AvailableRegions() error {
-	fmt.Println("Available regions...")
+func (aws Aws) AvailableRegions() ([]table.Row, error) {
 	regions, err := aws.ec2.DescribeRegions(context.TODO(), &ec2.DescribeRegionsInput{})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	var rows []table.Row
 	for _, region := range regions.Regions {
-		fmt.Printf(
-			"[region] %15s, "+
-				"[endpoint] %s\n",
-			*region.RegionName,
-			*region.Endpoint)
+		rows = append(rows, table.Row{*region.RegionName, *region.Endpoint})
 	}
 
-	return nil
+	return rows, nil
 }

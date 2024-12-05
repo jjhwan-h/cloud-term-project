@@ -2,22 +2,19 @@ package internal
 
 import (
 	"log"
-	"strconv"
 )
 
-func (cli Cli) scanInt() option {
-	cli.sc.Scan()
-	v, _ := strconv.Atoi(cli.sc.Text())
-	return option(v)
-}
-
-func (cli Cli) scanString() string {
-	cli.sc.Scan()
-	return cli.sc.Text()
-}
-
-func handleError(err error) {
+func handleResult(res *string, err error) *string {
 	if err != nil {
 		log.Println(err)
+		return ptr(err.Error())
 	}
+	if res != nil {
+		return res
+	}
+	return nil
+}
+
+func ptr(s string) *string {
+	return &s
 }

@@ -15,3 +15,6 @@ func ToString(s string) *string {
 func ToBool(b bool) *bool {
 	return a.Bool(b)
 }
+func ptr(s string) *string {
+	return &s
+}
