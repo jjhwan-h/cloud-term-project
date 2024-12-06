@@ -20,3 +20,7 @@ WORKDIR /root/
 
 COPY --from=builder /app/app .
 COPY --from=builder /app/.dev.env .
+
+RUN chmod +x ./app
+
+ENTRYPOINT ["sh", "-c", "export TERM=xterm-256color && ./app cli"]

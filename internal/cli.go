@@ -3,6 +3,7 @@ package internal
 import (
 	"TermProject/aws"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/charmbracelet/bubbles/table"
@@ -12,6 +13,7 @@ import (
 type Cli struct {
 	aws   aws.Aws
 	table table.Model
+	shell *shell
 	ch    *string
 	menu  option
 }
@@ -22,10 +24,11 @@ func NewCli() (*Cli, error) {
 		return nil, err
 	}
 	t := NewTable(menuColumns, menuRows)
-
+	s := NewShell()
 	return &Cli{
 		aws:   *aws,
 		table: t,
+		shell: s,
 		ch:    nil,
 		menu:  option(main),
 	}, nil
@@ -73,6 +76,16 @@ func (cli *Cli) processAnswer(choice option) {
 		cli.ch = handleResult(nil, err)
 		cli.table = NewTable(imageColumns, rows)
 		cli.menu = listImages
+	case connectInstance:
+		host := cli.table.SelectedRow()[5]
+		conn, err := cli.aws.ConnectInstance(host)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		cli.shell.conn = conn
+		cli.shell.host = host
+		cli.shell.Start()
 	case quit:
 		os.Exit(0)
 	}

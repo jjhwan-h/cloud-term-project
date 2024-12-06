@@ -15,6 +15,7 @@ const (
 	createInstance   option = "6"
 	rebootInstance   option = "7"
 	listImages       option = "8"
+	connectInstance  option = "9"
 	quit             option = "99"
 )
 
@@ -24,8 +25,9 @@ var (
 			BorderForeground(lipgloss.Color("240"))
 
 	menuColumns = []table.Column{
-		{Title: "num", Width: 10},
-		{Title: "options", Width: 30},
+		{Title: "number", Width: 8},
+		{Title: "options", Width: 25},
+		{Title: "note", Width: 35},
 	}
 	instanceColumns = []table.Column{
 		{Title: "id", Width: 22},
@@ -33,6 +35,7 @@ var (
 		{Title: "type", Width: 15},
 		{Title: "state", Width: 15},
 		{Title: "monitoring state", Width: 22},
+		{Title: "public addr", Width: 0},
 	}
 	imageColumns = []table.Column{
 		{Title: "AMI", Width: 22},
@@ -48,14 +51,15 @@ var (
 		{Title: "endpoint", Width: 35},
 	}
 	menuRows = []table.Row{
-		{"1", "list instance"},
-		{"2", "available zones"},
-		{"3", "start instance"},
-		{"4", "available regions"},
-		{"5", "stop instance"},
-		{"6", "create instance"},
-		{"7", "reboot instance"},
-		{"8", "list images"},
-		{"99", "quit"},
+		{"1", "list instance", "Print all states of an instance"},
+		{"2", "available zones", "..."},
+		{"3", "start instance", "Print instances in a stopped state"},
+		{"4", "available regions", "..."},
+		{"5", "stop instance", "Print instances in a running state"},
+		{"6", "create instance", "..."},
+		{"7", "reboot instance", "Print instances in a running state"},
+		{"8", "list images", "Print all available images"},
+		{"9", "connect instance", "Access the instance through SSH"},
+		{"99", "quit", "..."},
 	}
 )

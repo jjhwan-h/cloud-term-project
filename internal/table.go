@@ -15,7 +15,7 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c":
+		case "ctrl+c":
 			return cli, tea.Quit
 		case "m", "M":
 			cli.menu = option(main)
@@ -25,16 +25,22 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				selected := option(cli.table.SelectedRow()[0])
 				if selected == startInstance { //stopped 상태인 instance만 출력
 					cli.updateStoppedInstance(selected)
-				} else if selected == stopInstance || selected == rebootInstance { //runing 상태인 instance만 출력
+				} else if selected == stopInstance ||
+					selected == rebootInstance ||
+					selected == connectInstance { //runing 상태인 instance만 출력
 					cli.updateRunningInstance(selected)
 				} else if selected == createInstance { // 사용가능한 image출력
 					cli.updateListImage(selected)
 				} else {
 					cli.processAnswer(selected)
 				}
-			} else {
+			} else if cli.menu != listInstance &&
+				cli.menu != listImages &&
+				cli.menu != availableRegions &&
+				cli.menu != availableZones {
 				cli.ch = ptr(cli.table.SelectedRow()[0])
 				cli.processAnswer(cli.menu)
+				clearScreen()
 			}
 		}
 	case tea.MouseMsg:
