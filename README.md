@@ -3,14 +3,16 @@
 2024년 충북대학교 클라우드컴퓨팅 Term-Project입니다.<br>
 주제: **AWS동적관리 프로그램**
 
+![cloud1](https://github.com/user-attachments/assets/f5d3b115-0e39-4640-8659-59b153bc06dc)
 ---
 
 ## 🚀 기능
 - instance
- - list instance
- - start instance
- - create instance
- - reboot instance
+  - list instance
+  - start instance
+  - create instance
+  - reboot instance
+  - connect instance
 - image
   - list images
 - info
@@ -25,6 +27,16 @@
 ---
 
 ## 📝 설치 및 실행
+- AWS API key 필요
+- .dev.env
+```
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_REGION=
+AWS_OWNER_ID=
+PRIVATE_KEY_PATH=cloud-test.pem // docker volume으로 /root/cloud-test.pem에 설정
+USER=ec2-user // ssh로 접속할 instance의 user명 (대부분 ec2-user나 ubuntu)
+```
 - image 빌드
 ```
 docker build -t aws .
@@ -32,21 +44,7 @@ docker build -t aws .
 
 - 실행
 ```
-docker run -it aws /bin/sh
-```
-
-- 컨테이너 내부 터미널이 ANSI를 지원하도록 설정(프로그램의 출력이 제대로 되지 않을경우)
-```
-export TERM=xterm-256color
-```
-
-- 프로그램 실행
-```
-./app // 사용가능한 명령어 확인가능
-./app cli 
+docker run -v /path/to/local/key:/root/cloud-test.pem aws
 ```
 
 ---
-
-## 🎥 실행 영상
-![실행3](https://github.com/user-attachments/assets/48c09e3f-691e-415b-b97c-efbbf5014b3a)
