@@ -3,11 +3,15 @@ package aws
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/charmbracelet/bubbles/table"
+	"github.com/spf13/viper"
+	"golang.org/x/crypto/ssh"
 )
 
 type (
@@ -32,12 +36,19 @@ func (aws Aws) ListInstances(state *string) ([]table.Row, error) {
 		for _, r := range instances.Reservations {
 			for _, instance := range r.Instances {
 				if state == nil || *state == string(instance.State.Name) {
+					addr := ""
+					if instance.PublicIpAddress != nil {
+						addr = *instance.PublicIpAddress
+					}
 					rows = append(rows, table.Row{*instance.InstanceId,
 						*instance.ImageId,
 						string(instance.InstanceType),
 						string(instance.State.Name),
-						string(instance.Monitoring.State)})
+						string(instance.Monitoring.State),
+						addr})
+
 				}
+
 			}
 		}
 		if instances.NextToken == nil {
@@ -107,6 +118,33 @@ func (aws Aws) StartInstance(id string) (*string, error) {
 
 	return ptr(res), nil
 }
+func (aws Aws) ConnectInstance(host string) (*ssh.Client, error) {
+	privateKeyPath := viper.GetString("PRIVATE_KEY_PATH")
+	user := viper.GetString("USER")
+	key, err := os.ReadFile(privateKeyPath)
+	if err != nil {
+		return nil, err
+	}
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		return nil, err
+	}
+
+	config := &ssh.ClientConfig{
+		User: user,
+		Auth: []ssh.AuthMethod{
+			ssh.PublicKeys(signer),
+		},
+		Timeout:         15 * time.Second,
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+	}
+	conn, err := ssh.Dial("tcp", host+":22", config)
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
+}
+
 func (aws Aws) startInstance(id string, dryRun bool) error {
 	_, err := aws.ec2.StartInstances(context.TODO(), &ec2.StartInstancesInput{
 		DryRun:      ToBool(dryRun),
