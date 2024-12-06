@@ -6,17 +6,18 @@ import (
 )
 
 const (
-	main             option = "0"
-	listInstance     option = "1"
-	availableZones   option = "2"
-	startInstance    option = "3"
-	availableRegions option = "4"
-	stopInstance     option = "5"
-	createInstance   option = "6"
-	rebootInstance   option = "7"
-	listImages       option = "8"
-	connectInstance  option = "9"
-	quit             option = "99"
+	main               option = "0"
+	listInstance       option = "1"
+	availableZones     option = "2"
+	startInstance      option = "3"
+	availableRegions   option = "4"
+	stopInstance       option = "5"
+	createInstance     option = "6"
+	rebootInstance     option = "7"
+	listImages         option = "8"
+	connectInstance    option = "9"
+	listSecurityGroups option = "10"
+	quit               option = "99"
 )
 
 var (
@@ -49,6 +50,10 @@ var (
 	regionColumns = []table.Column{
 		{Title: "region", Width: 20},
 		{Title: "endpoint", Width: 35},
+	}
+	sgColumns = []table.Column{
+		{Title: "id", Width: 15},
+		{Title: "name", Width: 10},
 	}
 	menuRows = []table.Row{
 		{"1", "list instance", "Print all states of an instance"},

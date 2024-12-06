@@ -59,26 +59,26 @@ func (aws Aws) ListInstances(state *string) ([]table.Row, error) {
 
 	return rows, nil
 }
-func (aws Aws) StopInstance(id string) (*string, error) {
+func (aws Aws) StopInstance(ch []string) (*string, error) {
 	//DryRun : 요청 유효성 및 잠재적인 오류 확인
-	err := aws.stopInstance(id, true)
+	err := aws.stopInstance(ch[0], true)
 	if err != nil {
 		return nil, err
 	}
 	//Run
-	err = aws.stopInstance(id, false)
+	err = aws.stopInstance(ch[0], false)
 	if err != nil {
 		return nil, err
 	}
-	res := fmt.Sprintf("Successfully stop instance %s\n", id)
+	res := fmt.Sprintf("Successfully stop instance %s\n", ch[0])
 
 	return ptr(res), nil
 }
-func (aws Aws) CreateInstance(id string) (*string, error) {
+func (aws Aws) CreateInstance(ch []string) (*string, error) {
 	instanceOutput, err := aws.ec2.RunInstances(context.TODO(), &ec2.RunInstancesInput{
 		MaxCount:     ToInt32(1),
 		MinCount:     ToInt32(1),
-		ImageId:      ToString(id),
+		ImageId:      ToString(ch[0]),
 		InstanceType: types.InstanceTypeT2Micro,
 	})
 	if err != nil {
@@ -86,39 +86,39 @@ func (aws Aws) CreateInstance(id string) (*string, error) {
 	}
 
 	res := fmt.Sprintf("Successfully started EC2 instance %s based on AMI %s\n",
-		*instanceOutput.ReservationId, id)
+		*instanceOutput.ReservationId, ch[0])
 	return ptr(res), nil
 }
-func (aws Aws) RebootInstance(id string) (*string, error) {
+func (aws Aws) RebootInstance(ch []string) (*string, error) {
 	// DryRun : 요청 유효성 및 잠재적인 오류 확인
-	err := aws.rebootInstance(id, true)
+	err := aws.rebootInstance(ch[0], true)
 	if err != nil {
 		return nil, err
 	}
 	// Run
-	err = aws.rebootInstance(id, false)
+	err = aws.rebootInstance(ch[0], false)
 	if err != nil {
 		return nil, err
 	}
-	res := fmt.Sprintf("Successfully reboot instance %s\n", id)
+	res := fmt.Sprintf("Successfully reboot instance %s\n", ch[0])
 	return ptr(res), nil
 }
-func (aws Aws) StartInstance(id string) (*string, error) {
+func (aws Aws) StartInstance(ch []string) (*string, error) {
 	//DryRun : 요청 유효성 및 잠재적인 오류 확인
-	err := aws.startInstance(id, true)
+	err := aws.startInstance(ch[0], true)
 	if err != nil {
 		return nil, err
 	}
 	//Run
-	err = aws.startInstance(id, false)
+	err = aws.startInstance(ch[0], false)
 	if err != nil {
 		return nil, err
 	}
-	res := fmt.Sprintf("Successfully start instance %s\n", id)
+	res := fmt.Sprintf("Successfully start instance %s\n", ch[0])
 
 	return ptr(res), nil
 }
-func (aws Aws) ConnectInstance(host string) (*ssh.Client, error) {
+func (aws Aws) ConnectInstance(ch []string) (*ssh.Client, error) {
 	privateKeyPath := viper.GetString("PRIVATE_KEY_PATH")
 	user := viper.GetString("USER")
 	key, err := os.ReadFile(privateKeyPath)
@@ -138,7 +138,7 @@ func (aws Aws) ConnectInstance(host string) (*ssh.Client, error) {
 		Timeout:         15 * time.Second,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
-	conn, err := ssh.Dial("tcp", host+":22", config)
+	conn, err := ssh.Dial("tcp", ch[0]+":22", config)
 	if err != nil {
 		return nil, err
 	}

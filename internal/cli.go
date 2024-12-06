@@ -14,8 +14,9 @@ type Cli struct {
 	aws   aws.Aws
 	table table.Model
 	shell *shell
-	ch    *string
+	ch    []string
 	menu  option
+	page  int
 }
 
 func NewCli() (*Cli, error) {
@@ -31,6 +32,7 @@ func NewCli() (*Cli, error) {
 		shell: s,
 		ch:    nil,
 		menu:  option(main),
+		page:  0,
 	}, nil
 }
 
@@ -46,47 +48,51 @@ func (cli *Cli) processAnswer(choice option) {
 	switch choice {
 	case listInstance:
 		rows, err := cli.aws.ListInstances(nil)
-		cli.ch = handleResult(nil, err)
+		handleResult(nil, err)
 		cli.table = NewTable(instanceColumns, rows)
 		cli.menu = listInstance
 	case availableZones:
 		rows, err := cli.aws.AvailableZones()
-		cli.ch = handleResult(nil, err)
+		handleResult(nil, err)
 		cli.table = NewTable(zoneColumns, rows)
 		cli.menu = availableZones
 	case startInstance:
-		res, err := cli.aws.StartInstance(*cli.ch)
-		cli.ch = handleResult(res, err)
+		res, err := cli.aws.StartInstance(cli.ch)
+		cli.ch = append(cli.ch, *handleResult(res, err))
 	case availableRegions:
 		rows, err := cli.aws.AvailableRegions()
-		cli.ch = handleResult(nil, err)
+		handleResult(nil, err)
 		cli.table = NewTable(regionColumns, rows)
 		cli.menu = availableRegions
 	case stopInstance:
-		res, err := cli.aws.StopInstance(*cli.ch)
-		cli.ch = handleResult(res, err)
+		res, err := cli.aws.StopInstance(cli.ch)
+		cli.ch = append(cli.ch, *handleResult(res, err))
 	case createInstance:
-		res, err := cli.aws.CreateInstance(*cli.ch)
-		cli.ch = handleResult(res, err)
+		res, err := cli.aws.CreateInstance(cli.ch)
+		cli.ch = append(cli.ch, *handleResult(res, err))
 	case rebootInstance:
-		res, err := cli.aws.RebootInstance(*cli.ch)
-		cli.ch = handleResult(res, err)
+		res, err := cli.aws.RebootInstance(cli.ch)
+		cli.ch = append(cli.ch, *handleResult(res, err))
 	case listImages:
 		rows, err := cli.aws.ListImages()
-		cli.ch = handleResult(nil, err)
+		handleResult(nil, err)
 		cli.table = NewTable(imageColumns, rows)
 		cli.menu = listImages
 	case connectInstance:
-		host := cli.table.SelectedRow()[5]
-		conn, err := cli.aws.ConnectInstance(host)
+		conn, err := cli.aws.ConnectInstance(cli.ch)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 		cli.menu = connectInstance
 		cli.shell.conn = conn
-		cli.shell.host = host
+		cli.shell.host = cli.ch[0]
 		cli.shell.Start()
+	// case listSecurityGroups:
+	// 	rows, err := cli.aws.ListSecurityGroup()
+	// 	handleResult(nil, err)
+	// 	cli.table = NewTable(sgColumns, rows)
+	// 	cli.menu = listSecurityGroups
 	case quit:
 		os.Exit(0)
 	}
@@ -97,16 +103,27 @@ func (cli *Cli) updateRunningInstance(selected option) {
 	handleResult(nil, err)
 	cli.table = NewTable(instanceColumns, rows)
 	cli.menu = selected
+	cli.page++
 }
 func (cli *Cli) updateStoppedInstance(selected option) {
 	rows, err := cli.aws.ListInstances(ptr("stopped"))
 	handleResult(nil, err)
 	cli.table = NewTable(instanceColumns, rows)
 	cli.menu = selected
+	cli.page++
 }
 func (cli *Cli) updateListImage(selected option) {
 	rows, err := cli.aws.ListImages()
 	handleResult(nil, err)
 	cli.table = NewTable(imageColumns, rows)
 	cli.menu = selected
+	cli.page++
 }
+
+// func (cli *Cli) updateListSg(selected option) {
+// 	rows, err := cli.aws.ListSecurityGroup()
+// 	handleResult(nil, err)
+// 	cli.table = NewTable(sgColumns, rows)
+// 	cli.menu = selected
+// 	cli.page++
+// }
