@@ -10,6 +10,7 @@
 - instance
   - list instance
   - start instance
+  - stop instance
   - create instance
   - reboot instance
   - connect instance
@@ -23,7 +24,7 @@
 ## ⚙️ 실행환경
 - Alpine Linux v3.20
 - golang v1.22
-- aws-sdk-go-v2
+- aws-sdk-go-v2 v1.32.6
 ---
 
 ## 📝 설치 및 실행
@@ -34,7 +35,7 @@ AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 AWS_REGION=
 AWS_OWNER_ID=
-PRIVATE_KEY_PATH=cloud-test.pem // docker volume으로 /root/cloud-test.pem에 설정
+PRIVATE_KEY_PATH=/root/cloud-test.pem // docker volume으로 /root/cloud-test.pem에 설정
 USER=ec2-user // ssh로 접속할 instance의 user명 (대부분 ec2-user나 ubuntu)
 ```
 - image 빌드
@@ -44,7 +45,10 @@ docker build -t aws .
 
 - 실행
 ```
-docker run -v /path/to/local/key:/root/cloud-test.pem aws
+export LOCAL_PRIVATE_KEY_PATH=/local/private/key/path //ssh 연결을위한 key
+export LOCAL_ENV_PATH=/local/env/path //.env
+
+./start.sh
 ```
 
 ---
