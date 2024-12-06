@@ -3,7 +3,8 @@
 2024년 충북대학교 클라우드컴퓨팅 Term-Project입니다.<br>
 주제: **AWS동적관리 프로그램**
 
-![cloud1](https://github.com/user-attachments/assets/f5d3b115-0e39-4640-8659-59b153bc06dc)
+![실행2](https://github.com/user-attachments/assets/b29fa1f0-7c43-4b55-9b9e-7904f3852dd6)
+
 ---
 
 ## 🚀 기능
