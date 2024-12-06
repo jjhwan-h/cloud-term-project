@@ -18,7 +18,9 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return cli, tea.Quit
 		case "m", "M":
+			cli.page = 0
 			cli.menu = option(main)
+			cli.ch = []string{}
 			cli.table = NewTable(menuColumns, menuRows)
 		case "enter":
 			if cli.menu == main { //main menu
@@ -34,13 +36,27 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else {
 					cli.processAnswer(selected)
 				}
-			} else if cli.menu != listInstance &&
-				cli.menu != listImages &&
-				cli.menu != availableRegions &&
-				cli.menu != availableZones {
-				cli.ch = ptr(cli.table.SelectedRow()[0])
+			} else if cli.menu == createInstance {
+				switch cli.page {
+				// case 1:
+				// 	cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
+				// 	cli.updateListSg(cli.menu)
+				case 1:
+					cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
+					cli.processAnswer(cli.menu)
+				}
+			} else if cli.menu == connectInstance {
+				switch cli.page {
+				case 1:
+					cli.ch = append(cli.ch, cli.table.SelectedRow()[5])
+					cli.processAnswer(cli.menu)
+					return cli, tea.Batch(tea.ClearScreen)
+				}
+			} else if cli.menu == startInstance ||
+				cli.menu == stopInstance ||
+				cli.menu == rebootInstance {
+				cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
 				cli.processAnswer(cli.menu)
-				clearScreen()
 			}
 		}
 	case tea.MouseMsg:
@@ -59,8 +75,8 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (cli *Cli) View() string {
-	if cli.ch != nil {
-		return baseStyle.Render(cli.table.View()) + "\n" + cli.table.HelpView() + "\n" + *cli.ch
+	if len(cli.ch) > 0 {
+		return baseStyle.Render(cli.table.View()) + "\n" + cli.table.HelpView() + "\n" + cli.ch[0]
 	}
 	return baseStyle.Render(cli.table.View()) + "\n" + cli.table.HelpView()
 }
