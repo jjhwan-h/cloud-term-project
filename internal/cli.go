@@ -83,6 +83,7 @@ func (cli *Cli) processAnswer(choice option) {
 			log.Println(err)
 			return
 		}
+		cli.menu = connectInstance
 		cli.shell.conn = conn
 		cli.shell.host = host
 		cli.shell.Start()

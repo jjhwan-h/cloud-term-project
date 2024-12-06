@@ -37,14 +37,14 @@ func NewShell() *shell {
 	ta.Prompt = "┃ "
 	ta.CharLimit = 280
 
-	ta.SetWidth(80)
+	ta.SetWidth(100)
 	ta.SetHeight(2)
 
 	ta.FocusedStyle.CursorLine = lipgloss.NewStyle()
 
 	ta.ShowLineNumbers = false
 
-	vp := viewport.New(80, 25)
+	vp := viewport.New(100, 25)
 
 	ta.KeyMap.InsertNewline.SetEnabled(false)
 
@@ -87,6 +87,7 @@ func (s *shell) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			s.conn.Close()
+			s.messages = []string{}
 			return s, tea.Quit
 		case tea.KeyEnter:
 			s.updateView(s.textarea.Value())
