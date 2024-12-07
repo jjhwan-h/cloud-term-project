@@ -38,10 +38,10 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			} else if cli.menu == createInstance {
 				switch cli.page {
-				// case 1:
-				// 	cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
-				// 	cli.updateListSg(cli.menu)
 				case 1:
+					cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
+					cli.updateListSg(cli.menu)
+				case 2:
 					cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
 					cli.processAnswer(cli.menu)
 				}
@@ -76,7 +76,7 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (cli *Cli) View() string {
 	if len(cli.ch) > 0 {
-		return baseStyle.Render(cli.table.View()) + "\n" + cli.table.HelpView() + "\n" + cli.ch[0]
+		return baseStyle.Render(cli.table.View()) + "\n" + cli.table.HelpView() + "\n" + cli.ch[len(cli.ch)-1]
 	}
 	return baseStyle.Render(cli.table.View()) + "\n" + cli.table.HelpView()
 }
