@@ -31,7 +31,8 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					selected == rebootInstance ||
 					selected == connectInstance { //runing 상태인 instance만 출력
 					cli.updateRunningInstance(selected)
-				} else if selected == createInstance { // 사용가능한 image출력
+				} else if selected == createInstance ||
+					selected == deleteImage { // 사용가능한 image출력
 					cli.updateListImage(selected)
 				} else if selected == createImage {
 					cli.updateRnSInstance(selected)
@@ -68,6 +69,12 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					cli.shell.messages = []string{}
 					cli.processAnswer(cli.menu)
 					return cli, tea.Batch(tea.ClearScreen)
+				}
+			} else if cli.menu == deleteImage {
+				switch cli.page {
+				case 1:
+					cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
+					cli.processAnswer(cli.menu)
 				}
 			} else if cli.menu == startInstance ||
 				cli.menu == stopInstance ||

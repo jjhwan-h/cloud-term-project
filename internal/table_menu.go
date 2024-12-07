@@ -18,6 +18,7 @@ const (
 	connectInstance    option = "9"
 	listSecurityGroups option = "10"
 	createImage        option = "11"
+	deleteImage        option = "12"
 	quit               option = "99"
 )
 
@@ -63,11 +64,12 @@ var (
 		{"4", "available regions", "List all available regions"},
 		{"5", "stop instance", "Stop an instance in a running state"},
 		{"6", "create instance", "Select an image and a security group"},
-		{"7", "reboot instance", "Restart an instance running state"},
+		{"7", "reboot instance", "Restart an instance in a running state"},
 		{"8", "list images", "List all available images"},
 		{"9", "connect instance", "Access the instance through SSH"},
 		{"10", "list security groups", "List all security groups"},
-		{"11", "create image", "Create an image of a stopped or running instance"},
+		{"11", "create image", "Select a stopped or running instance"},
+		{"12", "delete image", "Delete an image"},
 		{"99", "quit", "..."},
 	}
 )
