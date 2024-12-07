@@ -36,16 +36,16 @@ func (aws Aws) AvailableRegions() ([]table.Row, error) {
 	return rows, nil
 }
 
-// func (aws Aws) ListSecurityGroup() ([]table.Row, error) {
-// 	sgs, err := aws.ec2.GetSecurityGroupsForVpc(context.TODO(), &ec2.GetSecurityGroupsForVpcInput{})
+func (aws Aws) ListSecurityGroup() ([]table.Row, error) {
+	sgs, err := aws.ec2.DescribeSecurityGroups(context.TODO(), &ec2.DescribeSecurityGroupsInput{})
 
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	if err != nil {
+		return nil, err
+	}
 
-// 	var rows []table.Row
-// 	for _, sg := range sgs.SecurityGroupForVpcs {
-// 		rows = append(rows, table.Row{*sg.GroupId, *sg.GroupName})
-// 	}
-// 	return rows, nil
-// }
+	var rows []table.Row
+	for _, sg := range sgs.SecurityGroups {
+		rows = append(rows, table.Row{*sg.GroupId, *sg.GroupName})
+	}
+	return rows, nil
+}
