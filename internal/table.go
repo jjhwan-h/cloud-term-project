@@ -33,6 +33,8 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					cli.updateRunningInstance(selected)
 				} else if selected == createInstance { // 사용가능한 image출력
 					cli.updateListImage(selected)
+				} else if selected == createImage {
+					cli.updateRnSInstance(selected)
 				} else {
 					cli.processAnswer(selected)
 				}
@@ -49,6 +51,21 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				switch cli.page {
 				case 1:
 					cli.ch = append(cli.ch, cli.table.SelectedRow()[5])
+					cli.processAnswer(cli.menu)
+					cli.shell.menu = cli.menu
+					cli.shell.host = cli.ch[0]
+					cli.shell.Start()
+					return cli, tea.Batch(tea.ClearScreen)
+				}
+			} else if cli.menu == createImage {
+				switch cli.page {
+				case 1:
+					cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
+					cli.shell = NewShell(96, 0, "Please enter an image name with at least 3 characters")
+					cli.shell.menu = cli.menu
+					cli.shell.Start()
+					cli.ch = append(cli.ch, cli.shell.messages[0])
+					cli.shell.messages = []string{}
 					cli.processAnswer(cli.menu)
 					return cli, tea.Batch(tea.ClearScreen)
 				}

@@ -71,7 +71,7 @@ func (aws Aws) StopInstance(ch []string) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	res := fmt.Sprintf("Successfully stop instance %s\n", ch[0])
+	res := fmt.Sprintf("Successfully stopped instance %s\n", ch[0])
 
 	return ptr(res), nil
 }
@@ -107,7 +107,7 @@ func (aws Aws) RebootInstance(ch []string) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	res := fmt.Sprintf("Successfully reboot instance %s\n", ch[0])
+	res := fmt.Sprintf("Successfully rebooted instance %s\n", ch[0])
 	return ptr(res), nil
 }
 func (aws Aws) StartInstance(ch []string) (*string, error) {
@@ -121,7 +121,7 @@ func (aws Aws) StartInstance(ch []string) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	res := fmt.Sprintf("Successfully start instance %s\n", ch[0])
+	res := fmt.Sprintf("Successfully started instance %s\n", ch[0])
 
 	return ptr(res), nil
 }

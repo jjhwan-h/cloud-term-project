@@ -25,7 +25,7 @@ func NewCli() (*Cli, error) {
 		return nil, err
 	}
 	t := NewTable(menuColumns, menuRows)
-	s := NewShell()
+	s := NewShell(100, 25, "Send a command...(ESC/Ctrl+c exit)")
 	return &Cli{
 		aws:   *aws,
 		table: t,
@@ -86,13 +86,15 @@ func (cli *Cli) processAnswer(choice option) {
 		}
 		cli.menu = connectInstance
 		cli.shell.conn = conn
-		cli.shell.host = cli.ch[0]
-		cli.shell.Start()
 	case listSecurityGroups:
 		rows, err := cli.aws.ListSecurityGroup()
 		handleResult(nil, err)
 		cli.table = NewTable(sgColumns, rows)
 		cli.menu = listSecurityGroups
+	case createImage:
+		res, err := cli.aws.CreateImages(cli.ch)
+		cli.ch = append(cli.ch, *handleResult(res, err))
+		cli.menu = createImage
 	case quit:
 		os.Exit(0)
 	}
@@ -112,6 +114,16 @@ func (cli *Cli) updateStoppedInstance(selected option) {
 	cli.menu = selected
 	cli.page++
 }
+func (cli *Cli) updateRnSInstance(selected option) { // Running & Stopped
+	rows, err := cli.aws.ListInstances(ptr("running"))
+	handleResult(nil, err)
+	rows2, err := cli.aws.ListInstances(ptr("stopped"))
+	handleResult(nil, err)
+	rows = append(rows, rows2...)
+	cli.table = NewTable(instanceColumns, rows)
+	cli.menu = selected
+	cli.page++
+}
 func (cli *Cli) updateListImage(selected option) {
 	rows, err := cli.aws.ListImages()
 	handleResult(nil, err)
@@ -119,7 +131,6 @@ func (cli *Cli) updateListImage(selected option) {
 	cli.menu = selected
 	cli.page++
 }
-
 func (cli *Cli) updateListSg(selected option) {
 	rows, err := cli.aws.ListSecurityGroup()
 	handleResult(nil, err)

@@ -17,6 +17,7 @@ const (
 	listImages         option = "8"
 	connectInstance    option = "9"
 	listSecurityGroups option = "10"
+	createImage        option = "11"
 	quit               option = "99"
 )
 
@@ -27,8 +28,8 @@ var (
 
 	menuColumns = []table.Column{
 		{Title: "number", Width: 8},
-		{Title: "options", Width: 25},
-		{Title: "note", Width: 35},
+		{Title: "options", Width: 22},
+		{Title: "note", Width: 45},
 	}
 	instanceColumns = []table.Column{
 		{Title: "id", Width: 22},
@@ -56,16 +57,17 @@ var (
 		{Title: "name", Width: 25},
 	}
 	menuRows = []table.Row{
-		{"1", "list instance", "Print all states of an instance"},
-		{"2", "available zones", "..."},
-		{"3", "start instance", "Print instances in a stopped state"},
-		{"4", "available regions", "..."},
-		{"5", "stop instance", "Print instances in a running state"},
-		{"6", "create instance", "..."},
-		{"7", "reboot instance", "Print instances in a running state"},
-		{"8", "list images", "Print all available images"},
+		{"1", "list instances", "List instances with a specific state"},
+		{"2", "available zones", "List all available zones"},
+		{"3", "start instance", "Start an instance in a stopped state"},
+		{"4", "available regions", "List all available regions"},
+		{"5", "stop instance", "Stop an instance in a running state"},
+		{"6", "create instance", "Select an image and a security group"},
+		{"7", "reboot instance", "Restart an instance running state"},
+		{"8", "list images", "List all available images"},
 		{"9", "connect instance", "Access the instance through SSH"},
-		{"10", "list security groups", "..."},
+		{"10", "list security groups", "List all security groups"},
+		{"11", "create image", "Create an image of a stopped or running instance"},
 		{"99", "quit", "..."},
 	}
 )
