@@ -26,25 +26,26 @@ type shell struct {
 	senderStyle lipgloss.Style
 	host        string
 	conn        *ssh.Client
+	menu        option
 	err         error
 }
 
-func NewShell() *shell {
+func NewShell(Width int, viewHeight int, ph string) *shell {
 	ta := textarea.New()
-	ta.Placeholder = "Send a command...(ESC/Ctrl+c exit)"
+	ta.Placeholder = ph
 	ta.Focus()
 
 	ta.Prompt = "┃ "
 	ta.CharLimit = 280
 
-	ta.SetWidth(100)
+	ta.SetWidth(Width)
 	ta.SetHeight(2)
 
 	ta.FocusedStyle.CursorLine = lipgloss.NewStyle()
 
 	ta.ShowLineNumbers = false
 
-	vp := viewport.New(100, 25)
+	vp := viewport.New(Width, viewHeight)
 
 	ta.KeyMap.InsertNewline.SetEnabled(false)
 
@@ -90,15 +91,25 @@ func (s *shell) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			s.messages = []string{}
 			return s, tea.Quit
 		case tea.KeyEnter:
-			s.updateView(s.textarea.Value())
-			res, err := s.sendCmd(s.textarea.Value())
-			if err != nil {
-				s.updateView(err.Error())
-			} else {
-				s.updateView(string(res))
+			if s.menu == connectInstance { //ssh
+				s.updateView(s.textarea.Value())
+				res, err := s.sendCmd(s.textarea.Value())
+				if err != nil {
+					s.updateView(err.Error())
+				} else {
+					s.updateView(string(res))
+				}
+				s.textarea.Reset()
+				s.viewport.GotoBottom()
+			} else if s.menu == createImage { // image name
+				if len(s.textarea.Value()) >= 3 && len(s.textarea.Value()) <= 128 {
+					message := strings.Replace(s.textarea.Value(), "\n", "", -1)
+					s.messages = append(s.messages, message)
+				} else {
+					return s, tea.Batch(tiCmd, vpCmd)
+				}
+				return s, tea.Quit
 			}
-			s.textarea.Reset()
-			s.viewport.GotoBottom()
 		}
 
 	case errMsg:
