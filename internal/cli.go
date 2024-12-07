@@ -120,10 +120,10 @@ func (cli *Cli) updateListImage(selected option) {
 	cli.page++
 }
 
-// func (cli *Cli) updateListSg(selected option) {
-// 	rows, err := cli.aws.ListSecurityGroup()
-// 	handleResult(nil, err)
-// 	cli.table = NewTable(sgColumns, rows)
-// 	cli.menu = selected
-// 	cli.page++
-// }
+func (cli *Cli) updateListSg(selected option) {
+	rows, err := cli.aws.ListSecurityGroup()
+	handleResult(nil, err)
+	cli.table = NewTable(sgColumns, rows)
+	cli.menu = selected
+	cli.page++
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -75,11 +76,17 @@ func (aws Aws) StopInstance(ch []string) (*string, error) {
 	return ptr(res), nil
 }
 func (aws Aws) CreateInstance(ch []string) (*string, error) {
+	keyFilePath := viper.GetString("PRIVATE_KEY_PATH")
+	fileName := filepath.Base(keyFilePath)
+	keyName := strings.TrimSuffix(fileName, filepath.Ext(fileName))
+
 	instanceOutput, err := aws.ec2.RunInstances(context.TODO(), &ec2.RunInstancesInput{
-		MaxCount:     ToInt32(1),
-		MinCount:     ToInt32(1),
-		ImageId:      ToString(ch[0]),
-		InstanceType: types.InstanceTypeT2Micro,
+		MaxCount:         ToInt32(1),
+		MinCount:         ToInt32(1),
+		ImageId:          ToString(ch[0]),
+		InstanceType:     types.InstanceTypeT2Micro,
+		SecurityGroupIds: []string{ch[1]},
+		KeyName:          &keyName,
 	})
 	if err != nil {
 		return nil, err
