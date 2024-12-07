@@ -105,10 +105,10 @@ func (s *shell) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if len(s.textarea.Value()) >= 3 && len(s.textarea.Value()) <= 128 {
 					message := strings.Replace(s.textarea.Value(), "\n", "", -1)
 					s.messages = append(s.messages, message)
+					return s, tea.Quit
 				} else {
 					return s, tea.Batch(tiCmd, vpCmd)
 				}
-				return s, tea.Quit
 			}
 		}
 

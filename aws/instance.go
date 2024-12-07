@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -38,14 +39,22 @@ func (aws Aws) ListInstances(state *string) ([]table.Row, error) {
 			for _, instance := range r.Instances {
 				if state == nil || *state == string(instance.State.Name) {
 					addr := ""
+					name := ""
 					if instance.PublicIpAddress != nil {
 						addr = *instance.PublicIpAddress
+					}
+					for _, tag := range instance.Tags {
+						if *tag.Key == "Name" {
+							name = *tag.Value
+							break
+						}
 					}
 					rows = append(rows, table.Row{*instance.InstanceId,
 						*instance.ImageId,
 						string(instance.InstanceType),
 						string(instance.State.Name),
 						string(instance.Monitoring.State),
+						name,
 						addr})
 
 				}
@@ -150,6 +159,21 @@ func (aws Aws) ConnectInstance(ch []string) (*ssh.Client, error) {
 		return nil, err
 	}
 	return conn, nil
+}
+
+func (aws Aws) TerminateInstance(ch []string) (*string, error) {
+	if ch[1] == "main" {
+		err := errors.New("main instance cannot be terminated")
+		return nil, err
+	}
+	_, err := aws.ec2.TerminateInstances(context.TODO(), &ec2.TerminateInstancesInput{
+		InstanceIds: []string{ch[0]},
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := fmt.Sprintf("Successfully terminated EC2 instance %s\n", ch[0])
+	return ptr(res), nil
 }
 
 func (aws Aws) startInstance(id string, dryRun bool) error {
