@@ -92,9 +92,13 @@ func (cli *Cli) processAnswer(choice option) {
 		cli.table = NewTable(sgColumns, rows)
 		cli.menu = listSecurityGroups
 	case createImage:
-		res, err := cli.aws.CreateImages(cli.ch)
+		res, err := cli.aws.CreateImage(cli.ch)
 		cli.ch = append(cli.ch, *handleResult(res, err))
 		cli.menu = createImage
+	case deleteImage:
+		res, err := cli.aws.DeleteImage(cli.ch)
+		cli.ch = append(cli.ch, *handleResult(res, err))
+		cli.menu = deleteImage
 	case quit:
 		os.Exit(0)
 	}

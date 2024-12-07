@@ -31,7 +31,7 @@ func (aws Aws) ListImages() ([]table.Row, error) {
 	return rows, nil
 }
 
-func (aws Aws) CreateImages(ch []string) (*string, error) {
+func (aws Aws) CreateImage(ch []string) (*string, error) {
 	createOutput, err := aws.ec2.CreateImage(context.TODO(), &ec2.CreateImageInput{
 		InstanceId: ToString(ch[0]),
 		Name:       ToString(ch[1]),
@@ -40,5 +40,16 @@ func (aws Aws) CreateImages(ch []string) (*string, error) {
 		return nil, err
 	}
 	res := fmt.Sprintf("Successfully created Image\n Id: %s, Name: %s\n", *createOutput.ImageId, ch[1])
+	return ptr(res), nil
+}
+
+func (aws Aws) DeleteImage(ch []string) (*string, error) {
+	_, err := aws.ec2.DeregisterImage(context.TODO(), &ec2.DeregisterImageInput{
+		ImageId: ToString(ch[0]),
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := fmt.Sprintf("Successfully deleted Image\n Id: %s\n", ch[0])
 	return ptr(res), nil
 }
