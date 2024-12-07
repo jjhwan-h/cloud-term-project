@@ -53,7 +53,7 @@ var (
 	}
 	sgColumns = []table.Column{
 		{Title: "id", Width: 15},
-		{Title: "name", Width: 10},
+		{Title: "name", Width: 25},
 	}
 	menuRows = []table.Row{
 		{"1", "list instance", "Print all states of an instance"},
@@ -65,6 +65,7 @@ var (
 		{"7", "reboot instance", "Print instances in a running state"},
 		{"8", "list images", "Print all available images"},
 		{"9", "connect instance", "Access the instance through SSH"},
+		{"10", "list security groups", "..."},
 		{"99", "quit", "..."},
 	}
 )

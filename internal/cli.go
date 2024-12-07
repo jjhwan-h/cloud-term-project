@@ -88,11 +88,11 @@ func (cli *Cli) processAnswer(choice option) {
 		cli.shell.conn = conn
 		cli.shell.host = cli.ch[0]
 		cli.shell.Start()
-	// case listSecurityGroups:
-	// 	rows, err := cli.aws.ListSecurityGroup()
-	// 	handleResult(nil, err)
-	// 	cli.table = NewTable(sgColumns, rows)
-	// 	cli.menu = listSecurityGroups
+	case listSecurityGroups:
+		rows, err := cli.aws.ListSecurityGroup()
+		handleResult(nil, err)
+		cli.table = NewTable(sgColumns, rows)
+		cli.menu = listSecurityGroups
 	case quit:
 		os.Exit(0)
 	}
