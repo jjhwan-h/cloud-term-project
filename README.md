@@ -15,8 +15,11 @@
   - create instance
   - reboot instance
   - connect instance
+  - terminate instance
 - image
   - list images
+  - create image
+  - delete image
 - info
   - available regions
   - available zones
