@@ -33,13 +33,13 @@ func (aws Aws) ListImages() ([]table.Row, error) {
 
 func (aws Aws) CreateImage(ch []string) (*string, error) {
 	createOutput, err := aws.ec2.CreateImage(context.TODO(), &ec2.CreateImageInput{
-		InstanceId: ToString(ch[0]),
-		Name:       ToString(ch[1]),
+		InstanceId: ToString(ch[len(ch)-2]),
+		Name:       ToString(ch[len(ch)-1]),
 	})
 	if err != nil {
 		return nil, err
 	}
-	res := fmt.Sprintf("Successfully created Image\n Id: %s, Name: %s\n", *createOutput.ImageId, ch[1])
+	res := fmt.Sprintf("Successfully created Image\n Id: %s, Name: %s\n", *createOutput.ImageId, ch[len(ch)-1])
 	return ptr(res), nil
 }
 

@@ -17,6 +17,7 @@ type Cli struct {
 	ch    []string
 	menu  option
 	page  int
+	isEnd bool
 }
 
 func NewCli() (*Cli, error) {
@@ -33,6 +34,7 @@ func NewCli() (*Cli, error) {
 		ch:    nil,
 		menu:  option(main),
 		page:  0,
+		isEnd: false,
 	}, nil
 }
 
@@ -50,12 +52,10 @@ func (cli *Cli) processAnswer(choice option) {
 		rows, err := cli.aws.ListInstances(nil)
 		handleResult(nil, err)
 		cli.table = NewTable(instanceColumns, rows)
-		cli.menu = listInstance
 	case availableZones:
 		rows, err := cli.aws.AvailableZones()
 		handleResult(nil, err)
 		cli.table = NewTable(zoneColumns, rows)
-		cli.menu = availableZones
 	case startInstance:
 		res, err := cli.aws.StartInstance(cli.ch)
 		cli.ch = append(cli.ch, *handleResult(res, err))
@@ -63,7 +63,6 @@ func (cli *Cli) processAnswer(choice option) {
 		rows, err := cli.aws.AvailableRegions()
 		handleResult(nil, err)
 		cli.table = NewTable(regionColumns, rows)
-		cli.menu = availableRegions
 	case stopInstance:
 		res, err := cli.aws.StopInstance(cli.ch)
 		cli.ch = append(cli.ch, *handleResult(res, err))
@@ -77,28 +76,26 @@ func (cli *Cli) processAnswer(choice option) {
 		rows, err := cli.aws.ListImages()
 		handleResult(nil, err)
 		cli.table = NewTable(imageColumns, rows)
-		cli.menu = listImages
 	case connectInstance:
 		conn, err := cli.aws.ConnectInstance(cli.ch)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		cli.menu = connectInstance
 		cli.shell.conn = conn
 	case listSecurityGroups:
 		rows, err := cli.aws.ListSecurityGroup()
 		handleResult(nil, err)
 		cli.table = NewTable(sgColumns, rows)
-		cli.menu = listSecurityGroups
 	case createImage:
 		res, err := cli.aws.CreateImage(cli.ch)
 		cli.ch = append(cli.ch, *handleResult(res, err))
-		cli.menu = createImage
 	case deleteImage:
 		res, err := cli.aws.DeleteImage(cli.ch)
 		cli.ch = append(cli.ch, *handleResult(res, err))
-		cli.menu = deleteImage
+	case terminsateInstance:
+		res, err := cli.aws.TerminateInstance(cli.ch)
+		cli.ch = append(cli.ch, *handleResult(res, err))
 	case quit:
 		os.Exit(0)
 	}

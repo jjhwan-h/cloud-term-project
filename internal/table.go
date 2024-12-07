@@ -34,7 +34,8 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else if selected == createInstance ||
 					selected == deleteImage { // 사용가능한 image출력
 					cli.updateListImage(selected)
-				} else if selected == createImage {
+				} else if selected == createImage ||
+					selected == terminsateInstance {
 					cli.updateRnSInstance(selected)
 				} else {
 					cli.processAnswer(selected)
@@ -47,15 +48,17 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				case 2:
 					cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
 					cli.processAnswer(cli.menu)
+					cli.isEnd = true
 				}
 			} else if cli.menu == connectInstance {
 				switch cli.page {
 				case 1:
-					cli.ch = append(cli.ch, cli.table.SelectedRow()[5])
+					cli.ch = append(cli.ch, cli.table.SelectedRow()[6])
 					cli.processAnswer(cli.menu)
 					cli.shell.menu = cli.menu
 					cli.shell.host = cli.ch[0]
 					cli.shell.Start()
+					cli.isEnd = true
 					return cli, tea.Batch(tea.ClearScreen)
 				}
 			} else if cli.menu == createImage {
@@ -75,12 +78,22 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				case 1:
 					cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
 					cli.processAnswer(cli.menu)
+					cli.isEnd = true
+				}
+			} else if cli.menu == terminsateInstance {
+				switch cli.page {
+				case 1:
+					cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
+					cli.ch = append(cli.ch, cli.table.SelectedRow()[5])
+					cli.processAnswer(cli.menu)
+					cli.isEnd = true
 				}
 			} else if cli.menu == startInstance ||
 				cli.menu == stopInstance ||
 				cli.menu == rebootInstance {
 				cli.ch = append(cli.ch, cli.table.SelectedRow()[0])
 				cli.processAnswer(cli.menu)
+				cli.isEnd = true
 			}
 		}
 	case tea.MouseMsg:
@@ -100,7 +113,12 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (cli *Cli) View() string {
 	if len(cli.ch) > 0 {
-		return baseStyle.Render(cli.table.View()) + "\n" + cli.table.HelpView() + "\n" + cli.ch[len(cli.ch)-1]
+		str := baseStyle.Render(cli.table.View()) + "\n" + cli.table.HelpView() + "\n" + cli.ch[len(cli.ch)-1]
+		if cli.isEnd {
+			cli.ch = []string{}
+			cli.isEnd = false
+		}
+		return str
 	}
 	return baseStyle.Render(cli.table.View()) + "\n" + cli.table.HelpView()
 }

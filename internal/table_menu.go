@@ -19,6 +19,7 @@ const (
 	listSecurityGroups option = "10"
 	createImage        option = "11"
 	deleteImage        option = "12"
+	terminsateInstance option = "13"
 	quit               option = "99"
 )
 
@@ -38,6 +39,7 @@ var (
 		{Title: "type", Width: 15},
 		{Title: "state", Width: 15},
 		{Title: "monitoring state", Width: 22},
+		{Title: "name", Width: 8},
 		{Title: "public addr", Width: 0},
 	}
 	imageColumns = []table.Column{
@@ -70,6 +72,7 @@ var (
 		{"10", "list security groups", "List all security groups"},
 		{"11", "create image", "Select a stopped or running instance"},
 		{"12", "delete image", "Delete an image"},
+		{"13", "terminate instance", "Select any instance except the main one"},
 		{"99", "quit", "..."},
 	}
 )
