@@ -20,6 +20,7 @@
 - info
   - available regions
   - available zones
+  - list security groups
 ---
 
 ## ⚙️ 실행환경
