@@ -71,6 +71,7 @@ func (cli *Cli) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					cli.ch = append(cli.ch, cli.shell.messages[0])
 					cli.shell.messages = []string{}
 					cli.processAnswer(cli.menu)
+					cli.shell = NewShell(100, 25, "Send a command...(ESC/Ctrl+c exit)")
 					return cli, tea.Batch(tea.ClearScreen)
 				}
 			} else if cli.menu == deleteImage {
